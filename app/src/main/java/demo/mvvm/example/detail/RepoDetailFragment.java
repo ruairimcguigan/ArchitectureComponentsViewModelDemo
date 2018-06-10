@@ -1,6 +1,7 @@
 package demo.mvvm.example.detail;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,16 +10,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import demo.mvvm.example.MyApp;
 import demo.mvvm.example.R;
 import demo.mvvm.example.home.SelectedRepoViewModel;
+import demo.mvvm.example.viewmodel.ViewModelFactory;
 
 import static android.arch.lifecycle.ViewModelProviders.of;
 import static java.lang.String.valueOf;
 
-public class DetailFragment extends Fragment{
+public class RepoDetailFragment extends Fragment{
+
+    @Inject ViewModelFactory viewModelFactory;
 
     @BindView(R.id.repo_name) TextView repoName;
     @BindView(R.id.repo_description) TextView repoDescription;
@@ -27,6 +34,12 @@ public class DetailFragment extends Fragment{
 
     private Unbinder unbinder;
     private SelectedRepoViewModel selectedRepoViewModel;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        MyApp.getComponent(context).inject(this);
+    }
 
     @Nullable
     @Override
@@ -42,7 +55,7 @@ public class DetailFragment extends Fragment{
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        selectedRepoViewModel = of(getActivity()).get(SelectedRepoViewModel.class);
+        selectedRepoViewModel = of(getActivity(), viewModelFactory).get(SelectedRepoViewModel.class);
         selectedRepoViewModel.restoreFromBundle(savedInstanceState);
         displayRepo();
     }

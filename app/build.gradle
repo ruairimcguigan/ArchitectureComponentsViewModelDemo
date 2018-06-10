@@ -26,6 +26,7 @@ android {
 def supportLibVersion = '26.1.0'
 def retrofitVersion = '2.3.0'
 def butterknifeVersion = '8.8.1'
+def daggerVersion = "2.13"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -38,6 +39,9 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
     implementation "com.jakewharton:butterknife:$butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeVersion"
+
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

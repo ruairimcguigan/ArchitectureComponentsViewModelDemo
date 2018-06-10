@@ -4,7 +4,6 @@ import android.arch.lifecycle.LifecycleOwner;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -25,9 +24,9 @@ public class RepoListAdapter extends RecyclerView.Adapter<RepoListAdapter.RepoVi
 
     private final List<Repo> data = new ArrayList<>();
 
-    public RepoListAdapter(ListViewModel viewModel,
-                           LifecycleOwner owner,
-                           RepoSelectedListener repoSelectedListener) {
+    RepoListAdapter(RepoListViewModel viewModel,
+                    LifecycleOwner owner,
+                    RepoSelectedListener repoSelectedListener) {
         this.repoSelectedListener = repoSelectedListener;
 
         viewModel.getRepos().observe(owner, repos -> {

@@ -8,19 +8,24 @@ import android.util.Log;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import demo.mvvm.example.model.Repo;
 import demo.mvvm.example.network.RepoApi;
+import demo.mvvm.example.network.RepoService;
+import demo.mvvm.example.viewmodel.ViewModelFactory;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ListViewModel extends ViewModel {
+public class RepoListViewModel extends ViewModel {
 
     private final MutableLiveData<List<Repo>> repos = new MutableLiveData<>();
     private final MutableLiveData<Boolean> hasRepoLoadError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
     private Call<List<Repo>> repoCall;
+    private RepoService repoService;
 
     LiveData<List<Repo>> getRepos(){
         return repos;
@@ -34,13 +39,15 @@ public class ListViewModel extends ViewModel {
         return isLoading;
     }
 
-    public ListViewModel(){
+    @Inject
+    RepoListViewModel(RepoService repoService){
+        this.repoService = repoService;
         fetchRepos();
     }
 
     private void fetchRepos() {
         isLoading.setValue(true);
-        repoCall = RepoApi.getInstance().getRepos();
+        repoCall = repoService.getRepos();
         repoCall.enqueue(new Callback<List<Repo>>() {
             @Override
             public void onResponse(@NonNull Call<List<Repo>> call, @NonNull Response<List<Repo>> response) {

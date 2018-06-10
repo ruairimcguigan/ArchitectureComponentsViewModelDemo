@@ -1,6 +1,6 @@
 package demo.mvvm.example.home;
 
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,25 +13,32 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.Unbinder;
+import demo.mvvm.example.MyApp;
 import demo.mvvm.example.R;
 import demo.mvvm.example.common.RepoSelectedListener;
-import demo.mvvm.example.detail.DetailFragment;
+import demo.mvvm.example.detail.RepoDetailFragment;
 import demo.mvvm.example.model.Repo;
+import demo.mvvm.example.viewmodel.ViewModelFactory;
 
+import static android.arch.lifecycle.ViewModelProviders.*;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static butterknife.ButterKnife.bind;
 
-public class ListFragment extends Fragment implements RepoSelectedListener {
+public class RepoListFragment extends Fragment implements RepoSelectedListener {
+
+    @Inject ViewModelFactory viewModelFactory;
 
     @BindView(R.id.recycler_view) RecyclerView listView;
     @BindView(R.id.error_view) TextView errorView;
     @BindView(R.id.progress_view) ProgressBar loadingView;
 
     private Unbinder unbinder;
-    private ListViewModel viewModel;
+    private RepoListViewModel viewModel;
 
     @Nullable
     @Override
@@ -46,7 +53,7 @@ public class ListFragment extends Fragment implements RepoSelectedListener {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        viewModel = ViewModelProviders.of(this).get(ListViewModel.class);
+        viewModel = of(this, viewModelFactory).get(RepoListViewModel.class);
 
         listView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         listView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -56,16 +63,22 @@ public class ListFragment extends Fragment implements RepoSelectedListener {
     }
 
     @Override
-    public void onRepoSelected(Repo repo) {
-        /**
-         * Passing getActivity - as this mak this viewmodel scoped to the host activity,
-         * rather than the fragment - useful for accessing one view model from within multiple fragments
-         */
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        MyApp.getComponent(context).inject(this);
+    }
 
-        SelectedRepoViewModel selectedRepoViewModel = ViewModelProviders.of(getActivity()).get(SelectedRepoViewModel.class);
+    @Override
+    public void onRepoSelected(Repo repo) {
+        /*
+          Passing getActivity - as this mak this viewmodel scoped to the host activity,
+          rather than the fragment - useful for accessing one view model from within multiple fragments
+         */
+        SelectedRepoViewModel selectedRepoViewModel = of(
+                getActivity(), viewModelFactory).get(SelectedRepoViewModel.class);
         selectedRepoViewModel.setSelectedRepo(repo);
         getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.screen_container, new DetailFragment())
+                .replace(R.id.screen_container, new RepoDetailFragment())
                 .addToBackStack(null)
                 .commit();
 

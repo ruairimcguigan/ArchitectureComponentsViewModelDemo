@@ -4,10 +4,14 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
+
+import javax.inject.Inject;
 
 import demo.mvvm.example.model.Repo;
 import demo.mvvm.example.network.RepoApi;
+import demo.mvvm.example.network.RepoService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -16,6 +20,7 @@ public class SelectedRepoViewModel extends ViewModel {
 
     private final MutableLiveData<Repo> selectedRepo = new MutableLiveData<>();
     private Call<Repo> repoCall;
+    private RepoService repoService;
 
     public LiveData<Repo> getSelectedRepo(){
         return selectedRepo;
@@ -23,6 +28,11 @@ public class SelectedRepoViewModel extends ViewModel {
 
     void setSelectedRepo(Repo repo) {
         selectedRepo.setValue(repo);
+    }
+
+    @Inject
+    SelectedRepoViewModel(RepoService repoService) {
+        this.repoService = repoService;
     }
 
     public void saveToBundle(Bundle outState) {
@@ -45,10 +55,10 @@ public class SelectedRepoViewModel extends ViewModel {
     }
 
     private void loadRepo(String[] repoDetails) {
-        repoCall = RepoApi.getInstance().getSingleRepo(repoDetails[0], repoDetails[1]);
+        repoCall = repoService.getSingleRepo(repoDetails[0], repoDetails[1]);
         repoCall.enqueue(new Callback<Repo>() {
             @Override
-            public void onResponse(Call<Repo> call, Response<Repo> response) {
+            public void onResponse(@NonNull Call<Repo> call, @NonNull Response<Repo> response) {
                 selectedRepo.setValue(response.body());
                 repoCall = null;
             }
