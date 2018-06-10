@@ -26,6 +26,7 @@ public class DetailFragment extends Fragment{
     @BindView(R.id.repo_stars) TextView repoStars;
 
     private Unbinder unbinder;
+    private SelectedRepoViewModel selectedRepoViewModel;
 
     @Nullable
     @Override
@@ -41,11 +42,18 @@ public class DetailFragment extends Fragment{
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        selectedRepoViewModel = of(getActivity()).get(SelectedRepoViewModel.class);
+        selectedRepoViewModel.restoreFromBundle(savedInstanceState);
         displayRepo();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        selectedRepoViewModel.saveToBundle(outState);
+    }
+
     private void displayRepo() {
-        SelectedRepoViewModel selectedRepoViewModel = of(getActivity()).get(SelectedRepoViewModel.class);
         selectedRepoViewModel.getSelectedRepo().observe(this, repo -> {
                     repoName.setText(repo.name);
                     repoDescription.setText(repo.description);
