@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ArchitectureComponentsViewModelDemo</string>
+    <string name="api_error_repo">Error fetching repos</string>
+    <string name="repo_name">Repo Name</string>
+    <string name="description">Description</string>
+    <string name="repo_list_title">Github Repos</string>
+    <string name="repo_detail_title">Selected repo details</string>
+</resources>
